@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ heading }} | Nepali Coffee{% endblock %}
+{% block content %}
+<section class="section section-tint"><div class="container"><div class="auth-card mx-auto">
+  <div class="eyebrow">{% if is_registration %}Join our coffee community{% else %}Secure account access{% endif %}</div>
+  <h1 class="section-title h2 mt-2">{{ heading }}</h1>
+  {% if is_registration %}<p class="text-muted">Choose the account that matches how you will use Nepali Coffee. Administrator access is assigned separately and cannot be selected here.</p>{% endif %}
+  <form method="post" class="mt-4" novalidate>{% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% if field.name == 'role' %}<div class="role-choice">{% for choice in field %}<label class="role-option" for="{{ choice.id_for_label }}">{{ choice.tag }} <span>{{ choice.choice_label }}</span>{% if choice.choice_value == 'buyer' %}<small>Explore coffee, save producers, and write reviews.</small>{% elif choice.choice_value == 'seller' %}<small>Represent a farm, cooperative, roaster, or coffee business.</small>{% endif %}</label>{% endfor %}</div>
+        {% else %}{{ field }}{% endif %}
+        {% if field.help_text and field.name != 'role' %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
+    {% endfor %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <button class="btn btn-coffee w-100" type="submit">{{ button }}</button>
+  </form>
+  {% if is_registration %}<p class="mt-3 mb-0 small">Already registered? <a href="{% url 'login' %}">Log in</a>.{% else %}<p class="mt-3 mb-0 small">New here? <a href="{% url 'register' %}">Create a buyer or seller account</a>.{% endif %}</p>
+</div></div></section>
+<script>document.querySelectorAll('input:not([type=radio]):not([type=checkbox])').forEach(el=>el.classList.add('form-control'));document.querySelectorAll('input[type=radio]').forEach(el=>el.classList.add('form-check-input'));</script>
+{% endblock %}
